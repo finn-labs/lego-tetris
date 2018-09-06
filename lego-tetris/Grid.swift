@@ -49,14 +49,13 @@ class Grid {
 
 private extension Grid {
     func setupRows(for size: GridSize) {
-        let height = frame.height / CGFloat(size.rows)
         for i in 0 ..< size.rows {
-            let row = Row(capacity: size.columns, frame: CGRect(x: 0, y: CGFloat(i) * height, width: frame.width, height: height))
+            let row = Row(capacity: size.columns, frame: CGRect(x: 0, y: CGFloat(i) * cellSize.height, width: frame.width, height: cellSize.height))
             row.delegate = self
             rows.insert(row, at: i)
         }
 
-        rows.append(Row(capacity: size.columns, frame: CGRect(x: 0, y: frame.maxY, width: frame.width, height: height), available: false))
+        rows.append(Row(capacity: size.columns, frame: CGRect(x: 0, y: CGFloat(rows.count) * cellSize.height, width: frame.width, height: cellSize.height), available: false))
     }
 }
 

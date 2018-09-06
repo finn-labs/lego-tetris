@@ -37,7 +37,7 @@ class Row {
 
     func add(_ block: LegoBlock, at column: Int) {
         guard size + block.size < CGFloat(capacity) else {
-            delegate?.shouldRemoveRow(self)
+//            delegate?.shouldRemoveRow(self)
             return
         }
         blocks.insert(block)

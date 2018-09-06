@@ -26,6 +26,8 @@ class LegoBlock: UIView {
         set { frame.origin = newValue }
     }
 
+//    var targetPosition
+
     init(size: CGFloat, cellSize: CGSize) {
         self.size = size
         super.init(frame: CGRect(origin: .zero, size: CGSize(width: size * cellSize.width, height: cellSize.height)))
