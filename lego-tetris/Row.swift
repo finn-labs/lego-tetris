@@ -36,15 +36,21 @@ class Row {
     }
 
     func add(_ block: LegoBlock, at column: Int) {
-        guard size + block.size < CGFloat(capacity) else {
-//            delegate?.shouldRemoveRow(self)
-            return
-        }
         blocks.insert(block)
         size += block.size
 
         for i in column ..< column + Int(block.size) {
             available[i] = false
+        }
+
+        if size >= CGFloat(capacity) {
+            delegate?.shouldRemoveRow(self)
+        }
+    }
+
+    func updateBlockFrames() {
+        for block in blocks {
+            block.position.y = frame.minY
         }
     }
 }

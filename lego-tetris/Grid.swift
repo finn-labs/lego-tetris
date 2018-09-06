@@ -24,8 +24,6 @@ class Grid {
     var size: GridSize
     var frame: CGRect
 
-    weak var delegate: GridDelegate?
-
     init(size: GridSize, frame: CGRect) {
         self.size = size
         self.frame = frame
@@ -68,7 +66,12 @@ extension Grid: RowDelegate {
         guard let index = rows.index(of: row) else { return }
         let item = rows.remove(at: index)
 
-        delegate?.grid(self, didRemove: item)
+        for i in 0 ..< index {
+            rows[i].frame.origin.y += cellSize.height
+            rows[i].updateBlockFrames()
+        }
+        
+        rows.insert(Row(capacity: size.columns, frame: CGRect(x: 0, y: 0, width: frame.width, height: cellSize.height)), at: 0)
     }
 }
 

@@ -16,15 +16,22 @@ class GameViewController: UIViewController {
     var currentColumn: Int?
     var initialPosition: CGPoint = .zero
 
+    private var panGesture: UIPanGestureRecognizer?
+    private var swipeGesture: UISwipeGestureRecognizer?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
 
-        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
-        view.addGestureRecognizer(panGesture)
+        panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
+        panGesture?.delegate = self
+        view.addGestureRecognizer(panGesture!)
+
+        swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe(gesture:)))
+        swipeGesture!.direction = .down
+        view.addGestureRecognizer(swipeGesture!)
 
         grid = Grid(size: GridSize(rows: 15, columns: 10), frame: view.frame)
-        grid.delegate = self
 
         currentBlock = newBlock()
     }
@@ -61,6 +68,12 @@ class GameViewController: UIViewController {
         currentColumn = column
         block.position.x = CGFloat(column) * grid.cellSize.width
     }
+
+    @objc func handleSwipe(gesture: UISwipeGestureRecognizer) {
+        guard let block = currentBlock, let column = currentColumn else { return }
+        guard let row = grid.availableRow(for: block, at: column) else { return }
+        block.position.y = row.frame.minY
+    }
 }
 
 extension GameViewController: GridDelegate {
@@ -69,23 +82,26 @@ extension GameViewController: GridDelegate {
     }
 }
 
+extension GameViewController: UIGestureRecognizerDelegate {
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        guard let pan = panGesture, pan == gestureRecognizer else { return false }
+        return true
+    }
+}
+
 private extension GameViewController {
     func column(for position: CGPoint) -> Int {
         return Int(position.x / grid.cellSize.width)
     }
 
-    func randomColumn(for block: LegoBlock) -> Int {
-        let upper = UInt32(grid.size.columns - Int(block.size))
-        return Int(arc4random_uniform(upper))
-    }
-
     func newBlock() -> LegoBlock {
         let block = LegoBlock(size: 1 + CGFloat(arc4random_uniform(4)), cellSize: grid.cellSize)
-        let column = randomColumn(for: block)
+        let column = (grid.size.columns - Int(block.size)) / 2
         currentColumn = column
 
         block.position = CGPoint(x: grid.cellSize.width * CGFloat(column), y: grid.frame.minY - grid.cellSize.height)
-        block.backgroundColor = UIColor(hue: CGFloat(arc4random()) / CGFloat(UInt32.max), saturation: 0.3, brightness: 0.6, alpha: 1.0)
+        block.backgroundColor = UIColor(hue: CGFloat(arc4random()) / CGFloat(UInt32.max), saturation: 0.3, brightness: 0.8, alpha: 1.0)
 
         view.addSubview(block)
         return block
