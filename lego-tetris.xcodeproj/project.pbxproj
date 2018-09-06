@@ -14,6 +14,7 @@
 		DABF384C2141204A007582CC /* LegoBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABF384B2141204A007582CC /* LegoBlock.swift */; };
 		DABF384E2141220F007582CC /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABF384D2141220F007582CC /* GameViewController.swift */; };
 		DABF38502141485A007582CC /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABF384F2141485A007582CC /* Grid.swift */; };
+		DABF385221415F7A007582CC /* Row.swift in Sources */ = {isa = PBXBuildFile; fileRef = DABF385121415F7A007582CC /* Row.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		DABF384B2141204A007582CC /* LegoBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegoBlock.swift; sourceTree = "<group>"; };
 		DABF384D2141220F007582CC /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		DABF384F2141485A007582CC /* Grid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
+		DABF385121415F7A007582CC /* Row.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Row.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				DABF383B214119F6007582CC /* GameEngine.swift */,
 				DABF384D2141220F007582CC /* GameViewController.swift */,
 				DABF384F2141485A007582CC /* Grid.swift */,
+				DABF385121415F7A007582CC /* Row.swift */,
 				DABF384B2141204A007582CC /* LegoBlock.swift */,
 				DABF3839214119F6007582CC /* AppDelegate.swift */,
 				DABF3840214119F7007582CC /* Assets.xcassets */,
@@ -144,6 +147,7 @@
 				DABF384C2141204A007582CC /* LegoBlock.swift in Sources */,
 				DABF383C214119F6007582CC /* GameEngine.swift in Sources */,
 				DABF38502141485A007582CC /* Grid.swift in Sources */,
+				DABF385221415F7A007582CC /* Row.swift in Sources */,
 				DABF383A214119F6007582CC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

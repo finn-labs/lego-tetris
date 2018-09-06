@@ -27,7 +27,7 @@ class GameEngine: UIViewController {
     }
 
     @objc func step(timer: CADisplayLink) {
-        game.update(timer: timer)
+        game.update(with: timer)
     }
 
 }

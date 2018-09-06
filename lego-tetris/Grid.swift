@@ -8,53 +8,6 @@
 
 import UIKit
 
-protocol RowDelegate: class {
-    func shouldRemoveRow(_ row: Row)
-}
-
-class Row {
-
-    private var capacity: Int
-    private var size: CGFloat = 0
-    private var available: [Bool]
-
-    var blocks: Set<LegoBlock> = []
-    weak var delegate: RowDelegate?
-
-    init(capacity: Int, available: Bool) {
-        self.capacity = capacity
-        self.available = Array<Bool>(repeating: available, count: capacity)
-    }
-
-    func isAvailable(for block: LegoBlock, at column: Int) -> Bool {
-        for i in column ..< column + Int(block.size) {
-            if !available[i] { return false }
-        }
-        return true
-    }
-
-    func add(_ block: LegoBlock, at column: Int) {
-        guard size + block.size > CGFloat(capacity) else {
-            delegate?.shouldRemoveRow(self)
-            return
-        }
-        blocks.insert(block)
-        size += block.size
-
-        for i in column ..< column + Int(block.size) {
-            available[i] = false
-        }
-    }
-}
-
-extension Row: Equatable {
-    static func == (lhs: Row, rhs: Row) -> Bool {
-        return lhs.blocks == rhs.blocks
-    }
-
-
-}
-
 struct GridSize {
     let rows: Int
     let columns: Int
@@ -96,20 +49,26 @@ class Grid {
 
 private extension Grid {
     func setupRows(for size: GridSize) {
+        let height = frame.height / CGFloat(size.rows)
         for i in 0 ..< size.rows {
-            let row = Row(capacity: size.columns, available: true)
+            let row = Row(capacity: size.columns, frame: CGRect(x: 0, y: CGFloat(i) * height, width: frame.width, height: height))
             row.delegate = self
             rows.insert(row, at: i)
         }
 
-        rows.append(Row(capacity: 0, available: false))
+        rows.append(Row(capacity: size.columns, frame: CGRect(x: 0, y: frame.maxY, width: frame.width, height: height), available: false))
     }
 }
 
 extension Grid: RowDelegate {
     func shouldRemoveRow(_ row: Row) {
+        for block in row.blocks {
+            block.removeFromSuperview()
+        }
+
         guard let index = rows.index(of: row) else { return }
         let item = rows.remove(at: index)
+
         delegate?.grid(self, didRemove: item)
     }
 }

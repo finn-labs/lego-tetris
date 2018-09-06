@@ -11,7 +11,7 @@ import UIKit
 class LegoBlock: UIView {
 
     let size: CGFloat
-    let velocity = CGVector(dx: 0, dy: 2)
+    var velocity = CGVector(dx: 0, dy: 2)
 
     override var backgroundColor: UIColor? {
         didSet {
@@ -39,7 +39,7 @@ class LegoBlock: UIView {
         }
     }
 
-    func update(timer: CADisplayLink) {
+    func update(with timer: CADisplayLink) {
         removeIfNeeded()
 
         frame.origin.x += velocity.dx
