@@ -8,7 +8,16 @@
 
 import UIKit
 
+extension UIColor {
+    static let primaryBlue = UIColor(red: 0/255, green: 99/255, blue: 251/255, alpha: 1.0)
+    static let secondaryBlue = UIColor(red: 6/255, green: 190/255, blue: 251/255, alpha: 1.0)
+    static let stone = UIColor(red: 118/255, green: 118/255, blue: 118/255, alpha: 1.0)
+    static let sardine = UIColor(red: 195/255, green: 204/255, blue: 217/255, alpha: 1.0)
+}
+
 class GameViewController: UIViewController {
+
+    let colors: [UIColor] = [.primaryBlue, .secondaryBlue, .stone, .sardine]
 
     var grid: Grid!
     var score = Score()
@@ -168,7 +177,7 @@ private extension GameViewController {
             block.position = CGPoint(x: grid.cellSize.width * CGFloat(column), y: -grid.cellSize.height)
         }
 
-        block.backgroundColor = UIColor(hue: CGFloat(arc4random()) / CGFloat(UInt32.max), saturation: 0.3, brightness: 0.8, alpha: 1.0)
+        block.backgroundColor = colors[Int(arc4random_uniform(4))]
 
         view.addSubview(block)
         return block
@@ -197,7 +206,7 @@ private extension GameViewController {
         let label = UILabel(frame: .zero)
         label.text = "Wooops"
         label.font = UIFont.systemFont(ofSize: 64, weight: .bold)
-        label.textColor = .gray
+        label.textColor = .darkGray
         label.translatesAutoresizingMaskIntoConstraints = false
         goView.addSubview(label)
 
@@ -205,17 +214,17 @@ private extension GameViewController {
         let intVal = Int(score.value)
         slabel.text = "Score: \(intVal)"
         slabel.font = UIFont.systemFont(ofSize: 32, weight: .bold)
-        slabel.textColor = .gray
+        slabel.textColor = .darkGray
         slabel.translatesAutoresizingMaskIntoConstraints = false
         goView.addSubview(slabel)
 
         let button = UIButton(type: .system)
         button.addTarget(self, action: #selector(startOver), for: .touchUpInside)
         button.setTitle("Prøv Igjen", for: .normal)
-        button.setTitleColor(.gray, for: .normal)
+        button.setTitleColor(.darkGray, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         button.layer.borderWidth = 2
-        button.layer.borderColor = UIColor.gray.cgColor
+        button.layer.borderColor = UIColor.darkGray.cgColor
         button.layer.cornerRadius = 16
         button.contentEdgeInsets = UIEdgeInsets(top: 16, left: 32, bottom: 16, right: 32)
         button.translatesAutoresizingMaskIntoConstraints = false

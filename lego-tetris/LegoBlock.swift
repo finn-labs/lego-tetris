@@ -33,12 +33,16 @@ class LegoBlock: UIView {
         self.size = size
         super.init(frame: CGRect(origin: .zero, size: CGSize(width: size * cellSize.width, height: cellSize.height)))
 
+        layer.borderColor = UIColor.white.cgColor
+        layer.borderWidth = 1/3
         layer.cornerRadius = radius
 
         let unit = cellSize.width / 5.0
         for i in 0 ..< Int(size) {
-            let frame = CGRect(x: CGFloat(i) * cellSize.width + unit, y: -unit, width: 3 * unit, height: unit)
+            let frame = CGRect(x: CGFloat(i) * cellSize.width + unit, y: -unit + 1/3, width: 3 * unit, height: unit)
             let stud = UIView(frame: frame)
+            stud.layer.borderColor = UIColor.white.cgColor
+            stud.layer.borderWidth = 1/3
             stud.layer.cornerRadius = radius
             stud.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
             addSubview(stud)
