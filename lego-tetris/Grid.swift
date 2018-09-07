@@ -13,10 +13,6 @@ struct GridSize {
     let columns: Int
 }
 
-protocol GridDelegate: class {
-    func grid(_ grid: Grid, didRemove row: Row)
-}
-
 class Grid {
 
     var cellSize: CGSize
@@ -47,13 +43,16 @@ class Grid {
 
 private extension Grid {
     func setupRows(for size: GridSize) {
+
+        let offset = frame.height - cellSize.height * CGFloat(size.rows)
+
         for i in 0 ..< size.rows {
-            let row = Row(capacity: size.columns, frame: CGRect(x: 0, y: CGFloat(i) * cellSize.height, width: frame.width, height: cellSize.height))
+            let row = Row(capacity: size.columns, frame: CGRect(x: 0, y: offset + CGFloat(i) * cellSize.height, width: frame.width, height: cellSize.height))
             row.delegate = self
             rows.insert(row, at: i)
         }
 
-        rows.append(Row(capacity: size.columns, frame: CGRect(x: 0, y: CGFloat(rows.count) * cellSize.height, width: frame.width, height: cellSize.height), available: false))
+        rows.append(Row(capacity: size.columns, frame: CGRect(x: 0, y: offset + CGFloat(rows.count) * cellSize.height, width: frame.width, height: cellSize.height), available: false))
     }
 }
 
@@ -64,14 +63,16 @@ extension Grid: RowDelegate {
         }
 
         guard let index = rows.index(of: row) else { return }
-        let item = rows.remove(at: index)
+        let removed = rows.remove(at: index)
 
         for i in 0 ..< index {
             rows[i].frame.origin.y += cellSize.height
             rows[i].updateBlockFrames()
         }
-        
-        rows.insert(Row(capacity: size.columns, frame: CGRect(x: 0, y: 0, width: frame.width, height: cellSize.height)), at: 0)
+
+        let row = Row(capacity: size.columns, frame: CGRect(x: 0, y: 0, width: frame.width, height: cellSize.height))
+        row.delegate = self
+        rows.insert(row, at: 0)
     }
 }
 

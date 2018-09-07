@@ -35,7 +35,7 @@ class Row {
         return true
     }
 
-    func add(_ block: LegoBlock, at column: Int) {
+    func add(_ block: LegoBlock, at column: Int) -> Bool {
         blocks.insert(block)
         size += block.size
 
@@ -43,9 +43,9 @@ class Row {
             available[i] = false
         }
 
-        if size >= CGFloat(capacity) {
-            delegate?.shouldRemoveRow(self)
-        }
+        guard size >= CGFloat(capacity) else  { return false }
+        delegate?.shouldRemoveRow(self)
+        return true
     }
 
     func updateBlockFrames() {
@@ -57,6 +57,6 @@ class Row {
 
 extension Row: Equatable {
     static func == (lhs: Row, rhs: Row) -> Bool {
-        return lhs.blocks == rhs.blocks
+        return lhs === rhs
     }
 }

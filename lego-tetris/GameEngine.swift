@@ -11,7 +11,7 @@ import UIKit
 class GameEngine: UIViewController {
 
     lazy var timer = CADisplayLink(target: self, selector: #selector(step(timer:)))
-    lazy var game = GameViewController()
+    lazy var game = GameViewController(frame: CGRect(x: 0, y: 44, width: view.frame.width, height: view.frame.height - 78))
 
     override func viewDidLoad() {
         super.viewDidLoad()

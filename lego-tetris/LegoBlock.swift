@@ -11,7 +11,10 @@ import UIKit
 class LegoBlock: UIView {
 
     let size: CGFloat
-    var velocity = CGVector(dx: 0, dy: 2)
+    var velocity = CGVector.zero
+    var scoreMultiplier: CGFloat = 1
+
+    private let radius: CGFloat = 2.0
 
     override var backgroundColor: UIColor? {
         didSet {
@@ -26,33 +29,25 @@ class LegoBlock: UIView {
         set { frame.origin = newValue }
     }
 
-//    var targetPosition
-
     init(size: CGFloat, cellSize: CGSize) {
         self.size = size
         super.init(frame: CGRect(origin: .zero, size: CGSize(width: size * cellSize.width, height: cellSize.height)))
 
-        let unit = cellSize.width / 5.0
+        layer.cornerRadius = radius
 
+        let unit = cellSize.width / 5.0
         for i in 0 ..< Int(size) {
             let frame = CGRect(x: CGFloat(i) * cellSize.width + unit, y: -unit, width: 3 * unit, height: unit)
             let stud = UIView(frame: frame)
+            stud.layer.cornerRadius = radius
+            stud.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
             addSubview(stud)
         }
     }
 
     func update(with timer: CADisplayLink) {
-        removeIfNeeded()
-
         frame.origin.x += velocity.dx
         frame.origin.y += velocity.dy
-    }
-
-    private func removeIfNeeded() {
-        guard let superview = superview else { return }
-        if frame.origin.y > superview.frame.maxY {
-            removeFromSuperview()
-        }
     }
 
     required init?(coder aDecoder: NSCoder) {
