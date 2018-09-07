@@ -22,6 +22,9 @@ class GameViewController: UIViewController {
     private var panGesture: UIPanGestureRecognizer?
     private var swipeGesture: UISwipeGestureRecognizer?
     private var frame: CGRect
+    private lazy var gameOverView = createGameOverView()
+
+    weak var engine: GameEngine?
 
     private lazy var scoreLabel: UILabel = {
         let label = UILabel(frame: .zero)
@@ -43,7 +46,8 @@ class GameViewController: UIViewController {
 
     override func loadView() {
         view = UIView(frame: frame)
-        view.backgroundColor = UIColor(hue: 0.6, saturation: 0.3, brightness: 0.8, alpha: 0.3)
+        view.backgroundColor = .clear
+        view.clipsToBounds = true
 
         view.addSubview(scoreLabel)
         let constraints = [
@@ -64,7 +68,7 @@ class GameViewController: UIViewController {
         swipeGesture!.direction = .down
         view.addGestureRecognizer(swipeGesture!)
 
-        grid = Grid(size: GridSize(rows: 15, columns: 10), frame: view.frame)
+        grid = Grid(size: GridSize(rows: 14, columns: 10), frame: view.frame)
 
         currentBlock = newBlock()
         currentBlock?.velocity = CGVector(dx: 0, dy: 2)
@@ -77,7 +81,11 @@ class GameViewController: UIViewController {
         guard let block = currentBlock, let column = currentColumn else { return }
         block.update(with: timer)
 
-        guard let row = grid.availableRow(for: block, at: column) else { return }
+        guard let row = grid.availableRow(for: block, at: column) else {
+            timer.isPaused = true
+            presentGameOver()
+            return
+        }
 
         if block.frame.minY >= row.frame.minY {
             block.position.y = row.frame.minY
@@ -140,7 +148,7 @@ private extension GameViewController {
         let column = (grid.size.columns - Int(next.size)) / 2
         currentColumn = column
 
-        next.position = CGPoint(x: grid.cellSize.width * CGFloat(column), y: grid.frame.minY - grid.cellSize.height)
+        next.position = CGPoint(x: grid.cellSize.width * CGFloat(column), y: -grid.cellSize.height)
         next.velocity = CGVector(dx: 0, dy: 2)
         next.scoreMultiplier = success ? current.scoreMultiplier + 1 : 1
 
@@ -157,7 +165,7 @@ private extension GameViewController {
             block.position = CGPoint(x: frame.maxX - 8 - block.frame.width, y: 24)
         } else {
             let column = (grid.size.columns - Int(block.size)) / 2
-            block.position = CGPoint(x: grid.cellSize.width * CGFloat(column), y: grid.frame.minY - grid.cellSize.height)
+            block.position = CGPoint(x: grid.cellSize.width * CGFloat(column), y: -grid.cellSize.height)
         }
 
         block.backgroundColor = UIColor(hue: CGFloat(arc4random()) / CGFloat(UInt32.max), saturation: 0.3, brightness: 0.8, alpha: 1.0)
@@ -165,4 +173,121 @@ private extension GameViewController {
         view.addSubview(block)
         return block
     }
+
+    func presentGameOver() {
+        view.addSubview(gameOverView)
+        NSLayoutConstraint.activate([
+            gameOverView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            gameOverView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            gameOverView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+        ])
+    }
+
+    func createGameOverView() -> UIView {
+
+        let goView = UIView(frame: .zero)
+        goView.layer.cornerRadius = 32
+        goView.clipsToBounds = true
+        goView.translatesAutoresizingMaskIntoConstraints = false
+
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        goView.addSubview(blurView)
+
+        let label = UILabel(frame: .zero)
+        label.text = "Wooops"
+        label.font = UIFont.systemFont(ofSize: 64, weight: .bold)
+        label.textColor = .gray
+        label.translatesAutoresizingMaskIntoConstraints = false
+        goView.addSubview(label)
+
+        let slabel = UILabel(frame: .zero)
+        let intVal = Int(score.value)
+        slabel.text = "Score: \(intVal)"
+        slabel.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        slabel.textColor = .gray
+        slabel.translatesAutoresizingMaskIntoConstraints = false
+        goView.addSubview(slabel)
+
+        let button = UIButton(type: .system)
+        button.addTarget(self, action: #selector(startOver), for: .touchUpInside)
+        button.setTitle("Prøv Igjen", for: .normal)
+        button.setTitleColor(.gray, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.gray.cgColor
+        button.layer.cornerRadius = 16
+        button.contentEdgeInsets = UIEdgeInsets(top: 16, left: 32, bottom: 16, right: 32)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        goView.addSubview(button)
+
+        let constraints = [
+            blurView.leadingAnchor.constraint(equalTo: goView.leadingAnchor),
+            blurView.topAnchor.constraint(equalTo: goView.topAnchor),
+            blurView.trailingAnchor.constraint(equalTo: goView.trailingAnchor),
+            blurView.bottomAnchor.constraint(equalTo: goView.bottomAnchor),
+
+            label.centerXAnchor.constraint(equalTo: goView.centerXAnchor),
+            label.topAnchor.constraint(equalTo: goView.topAnchor, constant: 32),
+
+            slabel.centerXAnchor.constraint(equalTo: goView.centerXAnchor),
+            slabel.topAnchor.constraint(equalTo: label.bottomAnchor, constant: 16),
+
+            button.centerXAnchor.constraint(equalTo: goView.centerXAnchor),
+            button.topAnchor.constraint(equalTo: slabel.bottomAnchor, constant: 16),
+
+            goView.bottomAnchor.constraint(equalTo: button.bottomAnchor, constant: 32)
+        ]
+
+        NSLayoutConstraint.activate(constraints)
+
+        return goView
+    }
+
+    @objc func startOver() {
+        grid.clear()
+        score.value = 0
+        gameOverView.removeFromSuperview()
+        currentBlock?.removeFromSuperview()
+        nextBlock?.removeFromSuperview()
+
+        currentBlock = newBlock()
+        currentBlock?.velocity = CGVector(dx: 0, dy: 2)
+        currentColumn = (grid.size.columns - Int(currentBlock!.size)) / 2
+        nextBlock = newBlock(next: true)
+
+        engine?.timer.isPaused = false
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

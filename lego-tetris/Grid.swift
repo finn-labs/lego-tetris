@@ -39,6 +39,19 @@ class Grid {
 
         return nil
     }
+
+    func clear() {
+        for row in rows {
+            for block in row.blocks {
+                block.removeFromSuperview()
+            }
+
+            guard let index = rows.index(of: row) else { return }
+            rows.remove(at: index)
+        }
+
+        setupRows(for: size)
+    }
 }
 
 private extension Grid {
@@ -63,14 +76,15 @@ extension Grid: RowDelegate {
         }
 
         guard let index = rows.index(of: row) else { return }
-        let removed = rows.remove(at: index)
+        rows.remove(at: index)
 
         for i in 0 ..< index {
             rows[i].frame.origin.y += cellSize.height
             rows[i].updateBlockFrames()
         }
 
-        let row = Row(capacity: size.columns, frame: CGRect(x: 0, y: 0, width: frame.width, height: cellSize.height))
+        let offset = frame.height - cellSize.height * CGFloat(size.rows)
+        let row = Row(capacity: size.columns, frame: CGRect(x: 0, y: offset, width: frame.width, height: cellSize.height))
         row.delegate = self
         rows.insert(row, at: 0)
     }

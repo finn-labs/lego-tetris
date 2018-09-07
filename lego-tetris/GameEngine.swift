@@ -11,16 +11,23 @@ import UIKit
 class GameEngine: UIViewController {
 
     lazy var timer = CADisplayLink(target: self, selector: #selector(step(timer:)))
-    lazy var game = GameViewController(frame: CGRect(x: 0, y: 44, width: view.frame.width, height: view.frame.height - 78))
+    lazy var game = GameViewController(frame: CGRect(x: 0, y: 88, width: view.frame.width, height: view.frame.height - (88 + 83)))
+
+    override var prefersStatusBarHidden: Bool { return true }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
 
+        let imageView = UIImageView(image: #imageLiteral(resourceName: "background"))
+        imageView.frame = view.frame
+        view.addSubview(imageView)
+
         // Add game view controller
         addChildViewController(game)
         view.addSubview(game.view)
         game.didMove(toParentViewController: self)
+        game.engine = self
 
         // Start timer
         timer.add(to: .current, forMode: .defaultRunLoopMode)
